@@ -13,7 +13,7 @@ app.use(
   cors({
     origin: env.CORS_ORIGIN,
     allowMethods: ["GET", "POST", "OPTIONS"],
-  }),
+  })
 );
 
 app.get("/", (c) => {
@@ -37,7 +37,7 @@ app.get(
       })
       .refine((obj) => Object.values(obj).some((v) => v !== undefined), {
         message: "Report must include at least one field",
-      }),
+      })
   ),
   async (c) => {
     const { date, type, city } = c.req.valid("query");
@@ -49,7 +49,7 @@ app.get(
       },
     });
     return c.json(mystery);
-  },
+  }
 );
 
 const WitnessSchema = z
@@ -59,12 +59,13 @@ const WitnessSchema = z
         id: z.coerce.number().optional(),
         name: z.string().optional(),
         license_id: z.coerce.number().optional(),
+        address_number: z.coerce.number().optional(),
         address_street_name: z.string().optional(),
         ssn: z.string().optional(),
       })
       .refine((obj) => Object.values(obj).some((v) => v !== undefined), {
         message: "Witness must include at least one field",
-      }),
+      })
   )
   .nonempty("At least one witness is required");
 
@@ -77,6 +78,7 @@ app.post("/witness", zValidator("json", WitnessSchema), async (c) => {
           id: witness.id,
           name: witness.name ? { contains: witness.name } : undefined,
           license_id: witness.license_id,
+          address_number: witness.address_number,
           address_street_name: witness.address_street_name
             ? { contains: witness.address_street_name }
             : undefined,
@@ -93,8 +95,11 @@ app.post("/witness", zValidator("json", WitnessSchema), async (c) => {
             },
           },
         },
+        orderBy: {
+          address_number: "desc",
+        },
       });
-    }),
+    })
   );
   const filteredWitnesses = witnesses.filter((witness) => witness !== null);
   return c.json(filteredWitnesses);
@@ -108,10 +113,11 @@ app.get(
       check_in_date: z.coerce.number(),
       check_in_time: z.coerce.number(),
       check_out_time: z.coerce.number(),
-    }),
+    })
   ),
   async (c) => {
-    const { check_in_date, check_in_time, check_out_time } = c.req.valid("query");
+    const { check_in_date, check_in_time, check_out_time } =
+      c.req.valid("query");
     const gym = await prisma.get_fit_now_check_in.findMany({
       where: {
         check_in_date,
@@ -131,7 +137,7 @@ app.get(
       },
     });
     return c.json(gym);
-  },
+  }
 );
 
 app.get("/solicitor", async (c) => {
@@ -182,5 +188,5 @@ serve(
   },
   (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);
-  },
+  }
 );
