@@ -13,7 +13,7 @@ app.use(
   cors({
     origin: env.CORS_ORIGIN,
     allowMethods: ["GET", "POST", "OPTIONS"],
-  })
+  }),
 );
 
 app.get("/", (c) => {
@@ -27,11 +27,17 @@ app.get(
   "/report",
   zValidator(
     "query",
-    z.object({
-      date: z.coerce.number().optional(),
-      type: z.string().optional(),
-      city: z.string().optional(),
-    })
+    z
+      .object({
+        id: z.coerce.number().optional(),
+        date: z.coerce.number().optional(),
+        type: z.string().optional(),
+        description: z.string().optional(),
+        city: z.string().optional(),
+      })
+      .refine((obj) => Object.values(obj).some((v) => v !== undefined), {
+        message: "Report must include at least one field",
+      }),
   ),
   async (c) => {
     const { date, type, city } = c.req.valid("query");
@@ -43,7 +49,7 @@ app.get(
       },
     });
     return c.json(mystery);
-  }
+  },
 );
 
 const WitnessSchema = z
@@ -58,7 +64,7 @@ const WitnessSchema = z
       })
       .refine((obj) => Object.values(obj).some((v) => v !== undefined), {
         message: "Witness must include at least one field",
-      })
+      }),
   )
   .nonempty("At least one witness is required");
 
@@ -87,8 +93,8 @@ app.post("/witness", zValidator("json", WitnessSchema), async (c) => {
             },
           },
         },
-      })
-    )
+      }),
+    ),
   );
   const filteredWitnesses = witnesses.filter((witness) => witness !== null);
   return c.json(filteredWitnesses);
@@ -102,11 +108,10 @@ app.get(
       check_in_date: z.coerce.number(),
       check_in_time: z.coerce.number(),
       check_out_time: z.coerce.number(),
-    })
+    }),
   ),
   async (c) => {
-    const { check_in_date, check_in_time, check_out_time } =
-      c.req.valid("query");
+    const { check_in_date, check_in_time, check_out_time } = c.req.valid("query");
     const gym = await prisma.get_fit_now_check_in.findMany({
       where: {
         check_in_date,
@@ -126,7 +131,7 @@ app.get(
       },
     });
     return c.json(gym);
-  }
+  },
 );
 
 app.get("/solicitor", async (c) => {
@@ -177,5 +182,5 @@ serve(
   },
   (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);
-  }
+  },
 );

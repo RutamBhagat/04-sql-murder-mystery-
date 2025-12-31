@@ -17,16 +17,16 @@
     "db:studio": "prisma studio",
     "db:pull": "prisma db pull"
   },
-  "devDependencies": {
-    "prisma": "^7.1.0",
-    "typescript": "catalog:",
-    "@04-sql-murder-mystery-/config": "workspace:*"
-  },
   "dependencies": {
-    "@prisma/client": "^7.1.0",
+    "@04-sql-murder-mystery-/env": "workspace:*",
     "@prisma/adapter-libsql": "^7.1.0",
+    "@prisma/client": "^7.1.0",
     "dotenv": "catalog:",
-    "zod": "catalog:",
-    "@04-sql-murder-mystery-/env": "workspace:*"
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@04-sql-murder-mystery-/config": "workspace:*",
+    "prisma": "^7.1.0",
+    "typescript": "catalog:"
   }
 }
