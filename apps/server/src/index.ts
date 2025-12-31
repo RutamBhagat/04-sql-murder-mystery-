@@ -182,12 +182,10 @@ app.get("/solicitor", async (c) => {
         lte: 67,
       },
       person: {
-        some: {
-          facebook_event_checkin: {
-            some: {
-              event_name: {
-                contains: "SQL Symphony Concert",
-              },
+        facebook_event_checkin: {
+          some: {
+            event_name: {
+              contains: "SQL Symphony Concert",
             },
           },
         },
