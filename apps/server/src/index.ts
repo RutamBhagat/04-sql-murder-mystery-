@@ -13,7 +13,7 @@ app.use(
   cors({
     origin: env.CORS_ORIGIN,
     allowMethods: ["GET", "POST", "OPTIONS"],
-  }),
+  })
 );
 
 app.get("/", (c) => {
@@ -37,7 +37,7 @@ app.get(
       })
       .refine((obj) => Object.values(obj).some((v) => v !== undefined), {
         message: "Report must include at least one field",
-      }),
+      })
   ),
   async (c) => {
     const { date, type, city } = c.req.valid("query");
@@ -49,7 +49,7 @@ app.get(
       },
     });
     return c.json(mystery);
-  },
+  }
 );
 
 const WitnessSchema = z
@@ -65,7 +65,7 @@ const WitnessSchema = z
       })
       .refine((obj) => Object.values(obj).some((v) => v !== undefined), {
         message: "Witness must include at least one field",
-      }),
+      })
   )
   .nonempty("At least one witness is required");
 
@@ -86,9 +86,6 @@ app.post("/witness", zValidator("json", WitnessSchema), async (c) => {
         },
         include: {
           interview: true,
-          drivers_license: true,
-          income: true,
-          facebook_event_checkin: true,
           get_fit_now_member: {
             include: {
               get_fit_now_check_in: true,
@@ -99,7 +96,7 @@ app.post("/witness", zValidator("json", WitnessSchema), async (c) => {
           address_number: "desc",
         },
       });
-    }),
+    })
   );
   const filteredWitnesses = witnesses.filter((witness) => witness !== null);
   return c.json(filteredWitnesses);
@@ -116,7 +113,7 @@ app.get(
       check_in_time: z.coerce.number(),
       check_out_time: z.coerce.number(),
       plate_number: z.string().optional(),
-    }),
+    })
   ),
   async (c) => {
     const {
@@ -129,7 +126,9 @@ app.get(
     } = c.req.valid("query");
     const gym = await prisma.get_fit_now_check_in.findMany({
       where: {
-        membership_id: membership_id ? { startsWith: membership_id } : undefined,
+        membership_id: membership_id
+          ? { startsWith: membership_id }
+          : undefined,
         check_in_date,
         check_in_time: {
           lte: check_out_time,
@@ -138,10 +137,14 @@ app.get(
           gte: check_in_time,
         },
         get_fit_now_member: {
-          membership_status: membership_status ? { contains: membership_status } : undefined,
+          membership_status: membership_status
+            ? { contains: membership_status }
+            : undefined,
           person: {
             drivers_license: {
-              plate_number: plate_number ? { contains: plate_number } : undefined,
+              plate_number: plate_number
+                ? { contains: plate_number }
+                : undefined,
             },
           },
         },
@@ -159,7 +162,7 @@ app.get(
       },
     });
     return c.json(gym);
-  },
+  }
 );
 
 app.get("/solicitor", async (c) => {
@@ -210,5 +213,5 @@ serve(
   },
   (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);
-  },
+  }
 );
