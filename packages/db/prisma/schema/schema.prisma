@@ -27,7 +27,7 @@ model drivers_license {
   plate_number String?
   car_make     String?
   car_model    String?
-  person       person[]
+  person       person?
 }
 
 model facebook_event_checkin {
@@ -52,7 +52,7 @@ model get_fit_now_check_in {
 
 model get_fit_now_member {
   id                    String                 @id
-  person_id             Int?
+  person_id             Int?                   @unique
   name                  String?
   membership_start_date Int?
   membership_status     String?
@@ -63,7 +63,7 @@ model get_fit_now_member {
 model income {
   ssn           String   @id
   annual_income Int?
-  person        person[]
+  person        person?
 }
 
 model interview {
@@ -75,12 +75,12 @@ model interview {
 model person {
   id                     Int                      @id @default(autoincrement())
   name                   String?
-  license_id             Int?
+  license_id             Int?                     @unique
   address_number         Int?
   address_street_name    String?
-  ssn                    String?
+  ssn                    String?                  @unique
   facebook_event_checkin facebook_event_checkin[]
-  get_fit_now_member     get_fit_now_member[]
+  get_fit_now_member     get_fit_now_member?
   interview              interview?
   drivers_license        drivers_license?         @relation(fields: [license_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   income                 income?                  @relation(fields: [ssn], references: [ssn], onDelete: NoAction, onUpdate: NoAction)
