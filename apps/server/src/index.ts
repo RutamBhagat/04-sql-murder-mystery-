@@ -71,8 +71,8 @@ const WitnessSchema = z
 app.post("/witness", zValidator("json", WitnessSchema), async (c) => {
   const data = c.req.valid("json");
   const witnesses = await Promise.all(
-    data.map((witness) =>
-      prisma.person.findFirst({
+    data.map((witness) => {
+      return prisma.person.findFirst({
         where: {
           id: witness.id,
           name: witness.name ? { contains: witness.name } : undefined,
@@ -93,8 +93,8 @@ app.post("/witness", zValidator("json", WitnessSchema), async (c) => {
             },
           },
         },
-      }),
-    ),
+      });
+    }),
   );
   const filteredWitnesses = witnesses.filter((witness) => witness !== null);
   return c.json(filteredWitnesses);
