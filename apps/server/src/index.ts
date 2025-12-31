@@ -129,6 +129,47 @@ app.get(
   }
 );
 
+app.get("/solicitor", async (c) => {
+  const solicitor_drivers_license = await prisma.drivers_license.findMany({
+    where: {
+      car_make: {
+        contains: "Tesla",
+      },
+      car_model: {
+        contains: "Model S",
+      },
+      hair_color: {
+        contains: "red",
+      },
+      height: {
+        gte: 65,
+        lte: 67,
+      },
+      person: {
+        some: {
+          facebook_event_checkin: {
+            some: {
+              event_name: {
+                contains: "SQL Symphony Concert",
+              },
+            },
+          },
+        },
+      },
+    },
+    include: {
+      person: {
+        include: {
+          interview: true,
+          income: true,
+          facebook_event_checkin: true,
+        },
+      },
+    },
+  });
+  return c.json(solicitor_drivers_license);
+});
+
 serve(
   {
     fetch: app.fetch,
