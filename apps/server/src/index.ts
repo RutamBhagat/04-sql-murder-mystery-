@@ -52,7 +52,7 @@ app.get(
   }
 );
 
-const WitnessSchema = z
+const PersonSchema = z
   .array(
     z
       .object({
@@ -69,20 +69,20 @@ const WitnessSchema = z
   )
   .nonempty("At least one witness is required");
 
-app.post("/witness", zValidator("json", WitnessSchema), async (c) => {
+app.post("/person", zValidator("json", PersonSchema), async (c) => {
   const data = c.req.valid("json");
   const witnesses = await Promise.all(
-    data.map((witness) => {
+    data.map((person) => {
       return prisma.person.findFirst({
         where: {
-          id: witness.id,
-          name: witness.name ? { contains: witness.name } : undefined,
-          license_id: witness.license_id,
-          address_number: witness.address_number,
-          address_street_name: witness.address_street_name
-            ? { contains: witness.address_street_name }
+          id: person.id,
+          name: person.name ? { contains: person.name } : undefined,
+          license_id: person.license_id,
+          address_number: person.address_number,
+          address_street_name: person.address_street_name
+            ? { contains: person.address_street_name }
             : undefined,
-          ssn: witness.ssn,
+          ssn: person.ssn,
         },
         include: {
           interview: true,
